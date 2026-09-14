@@ -45,7 +45,7 @@ const automationCards = [
     eyebrow: 'WEB / E2E',
     title: 'Automação Web com Cypress',
     stack: 'Cypress · POM · GitHub Actions',
-    description: 'Suítes E2E para validação de fluxos críticos, autenticação por perfis e regressivos executados em pipeline.',
+    description: 'Demonstração prática de automação de testes End-to-End (E2E) com Cypress e JavaScript no e-commerce SauceDemo. O projeto utiliza a arquitetura Page Object Model (POM) para cobrir os fluxos críticos de Login, Carrinho e Checkout, além de contar com uma esteira de CI/CD automatizada via GitHub Actions e relatórios com Mochawesome.',
     repoUrl: 'https://github.com/tiagojose100/cypress-web-automation-e2e',
     mediumUrl: 'https://medium.com/@tiagojose.100.tj',
     tone: 'green',
