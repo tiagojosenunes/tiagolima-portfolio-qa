@@ -231,7 +231,7 @@ export default function Page() {
           <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
             <div>
               <SectionLabel>01 / AUTOMAÇÕES E PROJETOS</SectionLabel>
-              <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">Alguns projetos de automação Web e Mobile</h2>
+              <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">Veja meus projetos!</h2>
             </div>
             <p className="max-w-sm text-sm leading-6 text-muted-foreground">
               Projetos práticos de automação e testes de APIs.
