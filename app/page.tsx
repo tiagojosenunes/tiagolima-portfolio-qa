@@ -1,3 +1,6 @@
+'use client'
+
+import { useState, useEffect } from 'react'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
 import {
   ArrowUpRight,
@@ -11,9 +14,11 @@ import {
   Gauge,
   Mail,
   Phone,
+  Play,
   ShieldCheck,
   Sparkles,
   Workflow,
+  X,
   Zap,
 } from 'lucide-react'
 
@@ -39,7 +44,20 @@ const mainTechs = [
   { title: 'Agentes de IA', description: 'Aceleração de cenários e suítes de QA' },
 ]
 
-const automationCards = [
+interface AutomationCard {
+  icon: React.ElementType
+  eyebrow: string
+  title: string
+  stack: string
+  description: string
+  repoUrl: string
+  mediumUrl: string
+  tone: 'green' | 'blue' | 'amber'
+  videoUrl?: string
+  posterUrl?: string
+}
+
+const automationCards: AutomationCard[] = [
   {
     icon: Code2,
     eyebrow: 'WEB / E2E',
@@ -49,6 +67,8 @@ const automationCards = [
     repoUrl: 'https://github.com/tiagojosenunes/cypress-with-page-object-model',
     mediumUrl: 'https://medium.com/@tiagojose.100.tj',
     tone: 'green',
+    videoUrl: '/cypress-demo.mp4',
+    // Opcional: Adicione a rota de uma imagem estática personalizada caso queira (ex: '/cypress-thumb.png')
   },
   {
     icon: Workflow,
@@ -130,6 +150,18 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 }
 
 export default function Page() {
+  const [activeVideo, setActiveVideo] = useState<{ url: string; title: string } | null>(null)
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setActiveVideo(null)
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [])
+
   return (
     <main className="min-h-screen overflow-hidden bg-background text-foreground">
       {/* Header / Navegação */}
@@ -238,15 +270,51 @@ export default function Page() {
             </p>
           </div>
           <div className="mt-12 grid gap-6 lg:grid-cols-3">
-            {automationCards.map(({ icon: Icon, eyebrow, title, stack, description, repoUrl, mediumUrl, tone }) => (
+            {automationCards.map(({ icon: Icon, eyebrow, title, stack, description, repoUrl, mediumUrl, tone, videoUrl, posterUrl }) => (
               <article key={title} className="group flex flex-col justify-between rounded-2xl border border-border bg-background p-4 transition-colors hover:border-emerald-400/40">
                 <div>
-                  <div className={`relative flex h-40 items-end overflow-hidden rounded-xl border border-border/70 p-5 ${tone === 'green' ? 'bg-emerald-400/5' : tone === 'blue' ? 'bg-slate-800/50' : 'bg-amber-400/5'}`}>
+                  <div 
+                    onClick={() => videoUrl && setActiveVideo({ url: videoUrl, title })}
+                    className={`relative flex h-44 items-center justify-center overflow-hidden rounded-xl border border-border/70 ${
+                      videoUrl ? 'cursor-pointer group/preview' : ''
+                    } ${tone === 'green' ? 'bg-emerald-400/5' : tone === 'blue' ? 'bg-slate-800/50' : 'bg-amber-400/5'}`}
+                  >
                     <div className="absolute inset-0 bg-[linear-gradient(to_right,transparent_49%,hsl(var(--border)/0.35)_50%,transparent_51%),linear-gradient(to_bottom,transparent_49%,hsl(var(--border)/0.35)_50%,transparent_51%)] bg-[length:32px_32px]" />
-                    <div className="relative flex size-12 items-center justify-center rounded-xl border border-emerald-400/20 bg-background text-emerald-400">
-                      <Icon className="size-5" />
-                    </div>
+                    
+                    {videoUrl ? (
+                      <>
+                        {/* Imagem de Capa ou Frame Estático do Vídeo */}
+                        {posterUrl ? (
+                          <img
+                            src={posterUrl}
+                            alt={title}
+                            className="absolute inset-0 h-full w-full object-cover opacity-40 transition-opacity duration-300 group-hover/preview:opacity-75"
+                          />
+                        ) : (
+                          <video
+                            src={`${videoUrl}#t=0.1`}
+                            preload="metadata"
+                            className="absolute inset-0 h-full w-full object-cover opacity-40 transition-opacity duration-300 group-hover/preview:opacity-75"
+                          />
+                        )}
+                        <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/40 to-transparent" />
+
+                        <div className="relative z-10 flex flex-col items-center gap-2">
+                          <div className="flex size-14 items-center justify-center rounded-full border border-emerald-400/50 bg-background/90 text-emerald-400 shadow-lg shadow-emerald-500/20 backdrop-blur-md transition-transform duration-300 group-hover/preview:scale-110 group-hover/preview:border-emerald-400 group-hover/preview:bg-emerald-500 group-hover/preview:text-slate-950">
+                            <Play className="size-6 fill-current ml-0.5" />
+                          </div>
+                          <span className="font-mono text-[11px] font-semibold text-emerald-400 tracking-wider">
+                            ASSISTIR
+                          </span>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="relative z-10 flex size-12 items-center justify-center rounded-xl border border-emerald-400/20 bg-background text-emerald-400">
+                        <Icon className="size-5" />
+                      </div>
+                    )}
                   </div>
+
                   <div className="pt-5">
                     <p className="font-mono text-[10px] tracking-widest text-emerald-400">{eyebrow}</p>
                     <h3 className="mt-2 text-xl font-semibold">{title}</h3>
@@ -254,6 +322,7 @@ export default function Page() {
                     <p className="mt-4 text-sm leading-relaxed text-muted-foreground">{description}</p>
                   </div>
                 </div>
+
                 <div className="pt-6 flex flex-col gap-3 border-t border-border/50 mt-4">
                   <a 
                     href={repoUrl} 
@@ -277,6 +346,44 @@ export default function Page() {
           </div>
         </div>
       </section>
+
+      {/* Modal de Exibição de Vídeo (Lightbox) */}
+      {activeVideo && (
+        <div 
+          onClick={() => setActiveVideo(null)}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 p-4 backdrop-blur-md animate-in fade-in duration-200"
+        >
+          <div 
+            onClick={(e) => e.stopPropagation()}
+            className="relative w-full max-w-4xl overflow-hidden rounded-2xl border border-border bg-card shadow-2xl shadow-emerald-500/10"
+          >
+            {/* Header do Modal */}
+            <div className="flex items-center justify-between border-b border-border/60 px-6 py-4">
+              <div className="flex items-center gap-2">
+                <span className="flex size-2 rounded-full bg-emerald-400" />
+                <h4 className="font-mono text-sm font-semibold text-foreground">{activeVideo.title}</h4>
+              </div>
+              <button
+                onClick={() => setActiveVideo(null)}
+                className="rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-emerald-400/10 hover:text-emerald-400"
+                aria-label="Fechar vídeo"
+              >
+                <X className="size-5" />
+              </button>
+            </div>
+
+            {/* Container do Vídeo */}
+            <div className="relative aspect-video w-full bg-black">
+              <video
+                src={activeVideo.url}
+                controls
+                autoPlay
+                className="h-full w-full"
+              />
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Seção 02: QA Knowledge Hub */}
       <section id="hub" className="mx-auto max-w-7xl px-6 py-24 lg:px-8">
